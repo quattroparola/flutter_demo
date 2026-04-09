@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 
 class DatabaseHelper {
   static const _dbName = 'my_database.db';
-  static const _dbVersion = 1;
+  static const _dbVersion = 2;
 
   static const table = 'myTable';
   static const columnId = '_id';
@@ -20,6 +20,7 @@ class DatabaseHelper {
       path,
       version: _dbVersion,
       onCreate: _onCreate,
+      onUpgrade: _onUpgrade,
     );
   }
 
@@ -33,6 +34,10 @@ $columnAge INTEGER NOT NULL
 )
 ''';
     await db.execute(sql);
+  }
+
+  Future<void> _onUpgrade(Database db, int oldVersion, int newVersion)async {
+   
   }
 
   Future<int> insert(Map<String, dynamic> row) async {
