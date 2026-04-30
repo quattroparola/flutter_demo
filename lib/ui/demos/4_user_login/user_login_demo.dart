@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({super.key});
+class UserLoginDemo extends StatelessWidget {
+  const UserLoginDemo({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +26,7 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 12),
               const Text(
-                'This screen is a placeholder so the app can run without Firebase setup.',
+                'This demo stays as a placeholder so the app can launch without Firebase.',
                 textAlign: TextAlign.center,
               ),
             ],

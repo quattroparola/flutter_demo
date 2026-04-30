@@ -1,0 +1,17 @@
+import 'package:flutter/material.dart';
+
+class TestingDemo extends StatefulWidget {
+  const TestingDemo({super.key});
+
+  @override
+  State<TestingDemo> createState() => _TestingDemoState();
+}
+
+class _TestingDemoState extends State<TestingDemo> {
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [TextField(), Text('+'), TextField(), Text('='), Text(' __ ')],
+    ); // Row
+  }
+}

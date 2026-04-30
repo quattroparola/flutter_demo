@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_demo/ui/settings/settings_manager.dart';
+import 'package:flutter_demo/ui/demos/settings/settings_manager.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});
@@ -17,15 +17,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       listenable: manager.appState,
       builder: (context, child) {
         return Scaffold(
-          appBar: AppBar(title: Text('Settings')),
+          appBar: AppBar(title: const Text('Settings')),
           body: ListView(
             children: [
               ListTile(
-                title: Text('Theme'),
+                title: const Text('Theme'),
                 subtitle: Text(manager.currentThemeTitle),
-                onTap: () async {
-                  final theme = await _showThemeDialog();
-                },
+                trailing: const Icon(Icons.chevron_right),
+                onTap: _showThemeDialog,
               ),
             ],
           ),
@@ -34,25 +33,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
     );
   }
 
-  ThemeMode theme = ThemeMode.system;
-
-  Future<ThemeMode?> _showThemeDialog() async {
-    return await showDialog(
+  Future<void> _showThemeDialog() async {
+    await showDialog<void>(
       context: context,
-      builder: (context) => AlertDialog(
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Choose theme'),
         content: SegmentedButton<ThemeMode>(
-          segments: [
-            ButtonSegment(value: ThemeMode.light, icon: Icon(Icons.light_mode)),
+          segments: const [
+            ButtonSegment(
+              value: ThemeMode.light,
+              icon: Icon(Icons.light_mode),
+              label: Text('Light'),
+            ),
             ButtonSegment(
               value: ThemeMode.system,
               icon: Icon(Icons.smartphone),
+              label: Text('System'),
             ),
-            ButtonSegment(value: ThemeMode.dark, icon: Icon(Icons.dark_mode)),
+            ButtonSegment(
+              value: ThemeMode.dark,
+              icon: Icon(Icons.dark_mode),
+              label: Text('Dark'),
+            ),
           ],
           selected: {manager.currentTheme},
-          onSelectionChanged: (Set<ThemeMode> selection) {
+          onSelectionChanged: (selection) {
             manager.setTheme(selection.first);
-            Navigator.of(context).pop();
+            Navigator.of(dialogContext).pop();
           },
         ),
       ),

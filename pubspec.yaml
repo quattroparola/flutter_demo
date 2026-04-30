@@ -17,6 +17,9 @@ dependencies:
   sqflite: ^2.4.2
   path_provider: ^2.1.5
   path: ^1.9.1
+  http: ^1.6.0
+  just_audio: ^0.10.5
+  just_audio_windows: ^0.2.2
 
 dev_dependencies:
   flutter_test:
@@ -25,3 +28,6 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/audio/ambient_synthwave.mp3
+    - assets/audio/aristocratic_bm_winterlight.mp3
