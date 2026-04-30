@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -23,6 +25,7 @@ class _PlayMusicDemoState extends State<PlayMusicDemo> {
     ),
   ];
 
+  StreamSubscription<int?>? _currentIndexSubscription;
   int _currentIndex = 0;
   bool _isLoadingTrack = true;
   String? _errorText;
@@ -34,22 +37,29 @@ class _PlayMusicDemoState extends State<PlayMusicDemo> {
   }
 
   Future<void> _initPlayer() async {
-    await _loadTrack(0, autoplay: false);
-  }
+    _currentIndexSubscription = _player.currentIndexStream.listen((index) {
+      if (!mounted || index == null) {
+        return;
+      }
 
-  Future<void> _loadTrack(int index, {required bool autoplay}) async {
+      setState(() {
+        _currentIndex = index;
+      });
+    });
+
     setState(() {
       _isLoadingTrack = true;
       _errorText = null;
-      _currentIndex = index;
     });
 
     try {
-      await _player.setAsset(_tracks[index].assetPath);
-
-      if (autoplay) {
-        await _player.play();
-      }
+      await _player.setAudioSources(
+        _tracks
+            .map((track) => AudioSource.asset(track.assetPath))
+            .toList(growable: false),
+        initialIndex: 0,
+        initialPosition: Duration.zero,
+      );
     } catch (error) {
       if (!mounted) {
         return;
@@ -67,9 +77,27 @@ class _PlayMusicDemoState extends State<PlayMusicDemo> {
     }
   }
 
+  Future<void> _playTrack(int index) async {
+    setState(() {
+      _errorText = null;
+    });
+
+    try {
+      await _player.seek(Duration.zero, index: index);
+      await _player.play();
+    } catch (error) {
+      if (!mounted) {
+        return;
+      }
+
+      setState(() {
+        _errorText = 'Failed to play audio: $error';
+      });
+    }
+  }
+
   Future<void> _selectTrack(int index) async {
-    final shouldAutoplay = _player.playing;
-    await _loadTrack(index, autoplay: shouldAutoplay);
+    await _playTrack(index);
   }
 
   Future<void> _playPrevious() async {
@@ -78,7 +106,7 @@ class _PlayMusicDemoState extends State<PlayMusicDemo> {
     }
 
     final previousIndex = (_currentIndex - 1 + _tracks.length) % _tracks.length;
-    await _loadTrack(previousIndex, autoplay: true);
+    await _playTrack(previousIndex);
   }
 
   Future<void> _playNext() async {
@@ -87,11 +115,12 @@ class _PlayMusicDemoState extends State<PlayMusicDemo> {
     }
 
     final nextIndex = (_currentIndex + 1) % _tracks.length;
-    await _loadTrack(nextIndex, autoplay: true);
+    await _playTrack(nextIndex);
   }
 
   @override
   void dispose() {
+    _currentIndexSubscription?.cancel();
     _player.dispose();
     super.dispose();
   }
